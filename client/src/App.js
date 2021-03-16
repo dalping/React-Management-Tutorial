@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import './App.css';
+import CustomerAdd from './components/CustomerAdd';
 import Customer from './components/Customer';
 import { render } from '@testing-library/react';
 import Paper from '@material-ui/core/Paper';
@@ -27,9 +28,24 @@ const styles = theme => ({
 
 class App extends Component {
 
-  state = {
-    custormers: "",
-    completed: 0
+  constructor(props){
+    super(props);
+    this.state = {
+      customers : '',
+      completed : 0
+    }
+  }
+
+  stateRefresh = () => { //state 값 갱신
+    this.setState({ 
+      customers: '',
+      completed: 0
+    })
+
+    this.callApi() //고객데이터 호출
+    .then(res => this.setState({customers: res}))
+    .catch(err => console.log(err)); // 예외처리
+
   }
 
   componentDidMount(){
@@ -55,6 +71,7 @@ class App extends Component {
   render(){
     const { classes } = this.props;
     return (
+      <div>
       <Paper className={classes.root}>
         <Table className={classes.table}>
           <TableHead>
@@ -90,6 +107,9 @@ class App extends Component {
           </TableBody>
         </Table>
     </Paper>
+    <CustomerAdd stateRefresh = {this.stateRefresh} />
+    </div>
+
     );
   }
 }

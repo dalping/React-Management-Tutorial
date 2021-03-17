@@ -102,14 +102,16 @@ class App extends Component {
     super(props);
     this.state = {
       customers : '',
-      completed : 0
+      completed : 0,
+      searchKeyword: ''
     }
   }
 
   stateRefresh = () => { //state 값 갱신
     this.setState({ 
       customers: '',
-      completed: 0
+      completed: 0,
+      searchKeyword: ''
     })
 
     this.callApi() //고객데이터 호출
@@ -145,6 +147,16 @@ class App extends Component {
   }
 
   render(){
+
+    const filteredComponents = (data) => { //핕터 함수
+      data = data.filter((c) => {
+        return c.name.indexOf(this.state.searchKeyword) > -1;
+      });
+      return data.map((c) => {
+        return <Customer stateRefresh={this.stateRefresh} key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} /> 
+      });
+    }
+
     const { classes } = this.props;
     const cellList = ["번호","프로필 이미지","이름","생년월일","성별","직업","설정"]
     return (
@@ -192,20 +204,8 @@ class App extends Component {
           </TableHead>
 
           <TableBody>
-            {this.state.customers ? this.state.customers.map(c=> {
-            return(
-              <Customer
-                stateRefresh = {this.stateRefresh} //삭제 이후에 stateRefresh가 이루어져야 한다.
-                key = {c.id}
-                id ={c.id}
-                image ={c.image}
-                name ={c.name}
-                birthday ={c.birthday}
-                gender ={c.gender}
-                job ={c.job}
-              />
-            );
-          }) : 
+            {this.state.customers ? 
+                filteredComponents(this.state.customers) :
             <TableRow>
               <TableCell colSpan="6" align="center">
                 <CircularProgress className={classes.progress}  value={this.state.completed}/>
